@@ -1,0 +1,3 @@
+bp_bonobo_homepage:
+    path:     /
+    defaults: { _controller: BPBonoboBundle:Default:index }
