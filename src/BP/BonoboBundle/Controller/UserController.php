@@ -3,6 +3,7 @@
 namespace BP\BonoboBundle\Controller;
 
 use BP\BonoboBundle\Entity\User;
+use BP\BonoboBundle\Entity\Friend;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;use Symfony\Component\HttpFoundation\Request;
@@ -88,7 +89,7 @@ class UserController extends Controller
         if ($editForm->isSubmitted() && $editForm->isValid()) {
             $this->getDoctrine()->getManager()->flush();
 
-            return $this->redirectToRoute('user_edit', array('id' => $user->getId()));
+            return $this->redirectToRoute('user_index', array('id' => $user->getId()));
         }
 
         return $this->render('user/edit.html.twig', array(
@@ -119,8 +120,81 @@ class UserController extends Controller
     }
 
     /**
-     * Creates a form to delete a user entity.
+     * Add friend.
      *
+     * @Route("/addfriend/{id}", name="addfriend")     
+     * 
+     */
+
+    public function addFriend($id){
+
+        $user= $this->container->get('security.token_storage')->getToken()->getUser();
+        $user_id=  $user->getId();     
+        $em = $this->getDoctrine()->getManager();
+        $userr= $em->getRepository('BPBonoboBundle:User')->find($user_id);
+        $friend= $em->getRepository('BPBonoboBundle:User')->find($id);
+        $user->addMyFriend($friend);
+        $user->getMyFriends($friend);
+        
+       // $em->persist($user);
+        $em->flush();
+       return $this->redirectToRoute('user_index');
+    }
+     /**
+     * Remove friend.
+     *
+     * @Route("/removefriend/{id}", name="removefriend")     
+     * 
+     */
+
+      public function removeFriend($id){
+
+        $user= $this->container->get('security.token_storage')->getToken()->getUser();
+        $user_id=  $user->getId();     
+        $em = $this->getDoctrine()->getManager();
+        $userr= $em->getRepository('BPBonoboBundle:User')->find($user_id);
+        $friend= $em->getRepository('BPBonoboBundle:User')->find($id);
+        $user->removeMyFriend($friend);
+        $user->getMyFriends($friend);
+
+       // $em->persist($user);
+        $em->flush();
+        return $this->redirectToRoute('user_index');
+    }
+
+
+
+    /**
+     * List friend.
+     *
+     * @Route("/friendlist/{id}", name="friendlist")     
+     * @Method("GET")
+     * 
+     */
+
+      public function listFriend($id){
+//         $user= $this->container->get('security.token_storage')->getToken()->getUser();
+        var_dump($id);
+        $em = $this->getDoctrine()->getManager();
+
+       $user= $em->getRepository('BPBonoboBundle:User')->find($id);
+    $users=$user->getMyFriends();
+// var_dump($friend->getUser());
+foreach ($user->getmyFriends() as $user) {
+       var_dump($user->getUsername());
+
+      }
+        return $this->render('user/friendlist.html.twig', array(
+            'users' => $users,
+     'friend_id' =>  $user->getId()
+// }
+        ));        
+    }
+
+
+    /**
+     * Creates a form to delete a user entity.
+     *   
      * @param User $user The user entity
      *
      * @return \Symfony\Component\Form\Form The form

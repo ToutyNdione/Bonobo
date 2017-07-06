@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1> Friend List</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Friends</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for user in users %}
+            <tr>
+                
+                <td>{{user.username}}</td>
+                <td>
+                    <ul>
+                      
+                    <li>
+                            <a href="{{ path('removefriend', { 'id': user.id })}}">remove friend</a>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}

@@ -95,16 +95,16 @@ class appDevDebugProjectContainer extends Container
             'doctrine.dbal.connection_factory' => 'getDoctrine_Dbal_ConnectionFactoryService',
             'doctrine.dbal.default_connection' => 'getDoctrine_Dbal_DefaultConnectionService',
             'doctrine.dbal.logger.profiling.default' => 'getDoctrine_Dbal_Logger_Profiling_DefaultService',
-            'doctrine.orm.default_entity_listener_resolver' => 'getDoctrine_Orm_DefaultEntityListenerResolverService',
-            'doctrine.orm.default_entity_manager' => 'getDoctrine_Orm_DefaultEntityManagerService',
-            'doctrine.orm.default_entity_manager.property_info_extractor' => 'getDoctrine_Orm_DefaultEntityManager_PropertyInfoExtractorService',
-            'doctrine.orm.default_listeners.attach_entity_listeners' => 'getDoctrine_Orm_DefaultListeners_AttachEntityListenersService',
-            'doctrine.orm.default_manager_configurator' => 'getDoctrine_Orm_DefaultManagerConfiguratorService',
+            'doctrine.orm.user_entity_listener_resolver' => 'getDoctrine_Orm_UserEntityListenerResolverService',
+            'doctrine.orm.user_entity_manager' => 'getDoctrine_Orm_UserEntityManagerService',
+            'doctrine.orm.user_entity_manager.property_info_extractor' => 'getDoctrine_Orm_UserEntityManager_PropertyInfoExtractorService',
+            'doctrine.orm.user_listeners.attach_entity_listeners' => 'getDoctrine_Orm_UserListeners_AttachEntityListenersService',
+            'doctrine.orm.user_manager_configurator' => 'getDoctrine_Orm_UserManagerConfiguratorService',
             'doctrine.orm.validator.unique' => 'getDoctrine_Orm_Validator_UniqueService',
             'doctrine.orm.validator_initializer' => 'getDoctrine_Orm_ValidatorInitializerService',
-            'doctrine_cache.providers.doctrine.orm.default_metadata_cache' => 'getDoctrineCache_Providers_Doctrine_Orm_DefaultMetadataCacheService',
-            'doctrine_cache.providers.doctrine.orm.default_query_cache' => 'getDoctrineCache_Providers_Doctrine_Orm_DefaultQueryCacheService',
-            'doctrine_cache.providers.doctrine.orm.default_result_cache' => 'getDoctrineCache_Providers_Doctrine_Orm_DefaultResultCacheService',
+            'doctrine_cache.providers.doctrine.orm.user_metadata_cache' => 'getDoctrineCache_Providers_Doctrine_Orm_UserMetadataCacheService',
+            'doctrine_cache.providers.doctrine.orm.user_query_cache' => 'getDoctrineCache_Providers_Doctrine_Orm_UserQueryCacheService',
+            'doctrine_cache.providers.doctrine.orm.user_result_cache' => 'getDoctrineCache_Providers_Doctrine_Orm_UserResultCacheService',
             'file_locator' => 'getFileLocatorService',
             'filesystem' => 'getFilesystemService',
             'form.factory' => 'getForm_FactoryService',
@@ -387,10 +387,10 @@ class appDevDebugProjectContainer extends Container
             'Symfony\\Component\\Security\\Core\\Encoder\\UserPasswordEncoderInterface' => 'security.password_encoder',
             'cache.app_clearer' => 'cache.default_clearer',
             'database_connection' => 'doctrine.dbal.default_connection',
-            'doctrine.orm.default_metadata_cache' => 'doctrine_cache.providers.doctrine.orm.default_metadata_cache',
-            'doctrine.orm.default_query_cache' => 'doctrine_cache.providers.doctrine.orm.default_query_cache',
-            'doctrine.orm.default_result_cache' => 'doctrine_cache.providers.doctrine.orm.default_result_cache',
-            'doctrine.orm.entity_manager' => 'doctrine.orm.default_entity_manager',
+            'doctrine.orm.entity_manager' => 'doctrine.orm.user_entity_manager',
+            'doctrine.orm.user_metadata_cache' => 'doctrine_cache.providers.doctrine.orm.user_metadata_cache',
+            'doctrine.orm.user_query_cache' => 'doctrine_cache.providers.doctrine.orm.user_query_cache',
+            'doctrine.orm.user_result_cache' => 'doctrine_cache.providers.doctrine.orm.user_result_cache',
             'event_dispatcher' => 'debug.event_dispatcher',
             'fos_user.util.username_canonicalizer' => 'fos_user.util.email_canonicalizer',
             'mailer' => 'swiftmailer.mailer.default',
@@ -859,9 +859,6 @@ class appDevDebugProjectContainer extends Container
         $instance->addListener('kernel.request', array(0 => function () {
             return ${($_ = isset($this->services['debug.debug_handlers_listener']) ? $this->services['debug.debug_handlers_listener'] : $this->get('debug.debug_handlers_listener')) && false ?: '_'};
         }, 1 => 'configure'), 2048);
-        $instance->addListener('console.command', array(0 => function () {
-            return ${($_ = isset($this->services['debug.debug_handlers_listener']) ? $this->services['debug.debug_handlers_listener'] : $this->get('debug.debug_handlers_listener')) && false ?: '_'};
-        }, 1 => 'configure'), 2048);
         $instance->addListener('kernel.request', array(0 => function () {
             return ${($_ = isset($this->services['router_listener']) ? $this->services['router_listener'] : $this->get('router_listener')) && false ?: '_'};
         }, 1 => 'onKernelRequest'), 32);
@@ -1039,7 +1036,7 @@ class appDevDebugProjectContainer extends Container
      */
     protected function getDoctrineService()
     {
-        return $this->services['doctrine'] = new \Doctrine\Bundle\DoctrineBundle\Registry($this, array('default' => 'doctrine.dbal.default_connection'), array('default' => 'doctrine.orm.default_entity_manager'), 'default', 'default');
+        return $this->services['doctrine'] = new \Doctrine\Bundle\DoctrineBundle\Registry($this, array('default' => 'doctrine.dbal.default_connection'), array('user' => 'doctrine.orm.user_entity_manager'), 'default', 'user');
     }
 
     /**
@@ -1074,26 +1071,26 @@ class appDevDebugProjectContainer extends Container
 
         $c = new \Symfony\Bridge\Doctrine\ContainerAwareEventManager($this);
         $c->addEventSubscriber(new \FOS\UserBundle\Doctrine\UserListener(${($_ = isset($this->services['fos_user.util.password_updater']) ? $this->services['fos_user.util.password_updater'] : $this->getFosUser_Util_PasswordUpdaterService()) && false ?: '_'}, ${($_ = isset($this->services['fos_user.util.canonical_fields_updater']) ? $this->services['fos_user.util.canonical_fields_updater'] : $this->getFosUser_Util_CanonicalFieldsUpdaterService()) && false ?: '_'}));
-        $c->addEventListener(array(0 => 'loadClassMetadata'), ${($_ = isset($this->services['doctrine.orm.default_listeners.attach_entity_listeners']) ? $this->services['doctrine.orm.default_listeners.attach_entity_listeners'] : $this->get('doctrine.orm.default_listeners.attach_entity_listeners')) && false ?: '_'});
+        $c->addEventListener(array(0 => 'loadClassMetadata'), ${($_ = isset($this->services['doctrine.orm.user_listeners.attach_entity_listeners']) ? $this->services['doctrine.orm.user_listeners.attach_entity_listeners'] : $this->get('doctrine.orm.user_listeners.attach_entity_listeners')) && false ?: '_'});
 
         return $this->services['doctrine.dbal.default_connection'] = ${($_ = isset($this->services['doctrine.dbal.connection_factory']) ? $this->services['doctrine.dbal.connection_factory'] : $this->get('doctrine.dbal.connection_factory')) && false ?: '_'}->createConnection(array('driver' => 'pdo_mysql', 'host' => '127.0.0.1', 'port' => NULL, 'dbname' => 'bonobo', 'user' => 'martin', 'password' => 1234, 'charset' => 'UTF8', 'driverOptions' => array(), 'defaultTableOptions' => array()), $b, $c, array());
     }
 
     /**
-     * Gets the 'doctrine.orm.default_entity_listener_resolver' service.
+     * Gets the 'doctrine.orm.user_entity_listener_resolver' service.
      *
      * This service is shared.
      * This method always returns the same instance of the service.
      *
      * @return \Doctrine\Bundle\DoctrineBundle\Mapping\ContainerAwareEntityListenerResolver A Doctrine\Bundle\DoctrineBundle\Mapping\ContainerAwareEntityListenerResolver instance
      */
-    protected function getDoctrine_Orm_DefaultEntityListenerResolverService()
+    protected function getDoctrine_Orm_UserEntityListenerResolverService()
     {
-        return $this->services['doctrine.orm.default_entity_listener_resolver'] = new \Doctrine\Bundle\DoctrineBundle\Mapping\ContainerAwareEntityListenerResolver($this);
+        return $this->services['doctrine.orm.user_entity_listener_resolver'] = new \Doctrine\Bundle\DoctrineBundle\Mapping\ContainerAwareEntityListenerResolver($this);
     }
 
     /**
-     * Gets the 'doctrine.orm.default_entity_manager' service.
+     * Gets the 'doctrine.orm.user_entity_manager' service.
      *
      * This service is shared.
      * This method always returns the same instance of the service.
@@ -1102,7 +1099,7 @@ class appDevDebugProjectContainer extends Container
      *
      * @return \Doctrine\ORM\EntityManager A Doctrine\ORM\EntityManager instance
      */
-    protected function getDoctrine_Orm_DefaultEntityManagerService($lazyLoad = true)
+    protected function getDoctrine_Orm_UserEntityManagerService($lazyLoad = true)
     {
         $a = new \Doctrine\Common\Persistence\Mapping\Driver\MappingDriverChain();
         $a->addDriver(new \Doctrine\ORM\Mapping\Driver\AnnotationDriver(${($_ = isset($this->services['annotation_reader']) ? $this->services['annotation_reader'] : $this->get('annotation_reader')) && false ?: '_'}, array(0 => ($this->targetDirs[3].'/src/BP/BonoboBundle/Entity'))), 'BP\\BonoboBundle\\Entity');
@@ -1110,9 +1107,9 @@ class appDevDebugProjectContainer extends Container
 
         $b = new \Doctrine\ORM\Configuration();
         $b->setEntityNamespaces(array('BPBonoboBundle' => 'BP\\BonoboBundle\\Entity'));
-        $b->setMetadataCacheImpl(${($_ = isset($this->services['doctrine_cache.providers.doctrine.orm.default_metadata_cache']) ? $this->services['doctrine_cache.providers.doctrine.orm.default_metadata_cache'] : $this->get('doctrine_cache.providers.doctrine.orm.default_metadata_cache')) && false ?: '_'});
-        $b->setQueryCacheImpl(${($_ = isset($this->services['doctrine_cache.providers.doctrine.orm.default_query_cache']) ? $this->services['doctrine_cache.providers.doctrine.orm.default_query_cache'] : $this->get('doctrine_cache.providers.doctrine.orm.default_query_cache')) && false ?: '_'});
-        $b->setResultCacheImpl(${($_ = isset($this->services['doctrine_cache.providers.doctrine.orm.default_result_cache']) ? $this->services['doctrine_cache.providers.doctrine.orm.default_result_cache'] : $this->get('doctrine_cache.providers.doctrine.orm.default_result_cache')) && false ?: '_'});
+        $b->setMetadataCacheImpl(${($_ = isset($this->services['doctrine_cache.providers.doctrine.orm.user_metadata_cache']) ? $this->services['doctrine_cache.providers.doctrine.orm.user_metadata_cache'] : $this->get('doctrine_cache.providers.doctrine.orm.user_metadata_cache')) && false ?: '_'});
+        $b->setQueryCacheImpl(${($_ = isset($this->services['doctrine_cache.providers.doctrine.orm.user_query_cache']) ? $this->services['doctrine_cache.providers.doctrine.orm.user_query_cache'] : $this->get('doctrine_cache.providers.doctrine.orm.user_query_cache')) && false ?: '_'});
+        $b->setResultCacheImpl(${($_ = isset($this->services['doctrine_cache.providers.doctrine.orm.user_result_cache']) ? $this->services['doctrine_cache.providers.doctrine.orm.user_result_cache'] : $this->get('doctrine_cache.providers.doctrine.orm.user_result_cache')) && false ?: '_'});
         $b->setMetadataDriverImpl($a);
         $b->setProxyDir((__DIR__.'/doctrine/orm/Proxies'));
         $b->setProxyNamespace('Proxies');
@@ -1121,52 +1118,52 @@ class appDevDebugProjectContainer extends Container
         $b->setDefaultRepositoryClassName('Doctrine\\ORM\\EntityRepository');
         $b->setNamingStrategy(new \Doctrine\ORM\Mapping\UnderscoreNamingStrategy());
         $b->setQuoteStrategy(new \Doctrine\ORM\Mapping\DefaultQuoteStrategy());
-        $b->setEntityListenerResolver(${($_ = isset($this->services['doctrine.orm.default_entity_listener_resolver']) ? $this->services['doctrine.orm.default_entity_listener_resolver'] : $this->get('doctrine.orm.default_entity_listener_resolver')) && false ?: '_'});
+        $b->setEntityListenerResolver(${($_ = isset($this->services['doctrine.orm.user_entity_listener_resolver']) ? $this->services['doctrine.orm.user_entity_listener_resolver'] : $this->get('doctrine.orm.user_entity_listener_resolver')) && false ?: '_'});
 
-        $this->services['doctrine.orm.default_entity_manager'] = $instance = \Doctrine\ORM\EntityManager::create(${($_ = isset($this->services['doctrine.dbal.default_connection']) ? $this->services['doctrine.dbal.default_connection'] : $this->get('doctrine.dbal.default_connection')) && false ?: '_'}, $b);
+        $this->services['doctrine.orm.user_entity_manager'] = $instance = \Doctrine\ORM\EntityManager::create(${($_ = isset($this->services['doctrine.dbal.default_connection']) ? $this->services['doctrine.dbal.default_connection'] : $this->get('doctrine.dbal.default_connection')) && false ?: '_'}, $b);
 
-        ${($_ = isset($this->services['doctrine.orm.default_manager_configurator']) ? $this->services['doctrine.orm.default_manager_configurator'] : $this->get('doctrine.orm.default_manager_configurator')) && false ?: '_'}->configure($instance);
+        ${($_ = isset($this->services['doctrine.orm.user_manager_configurator']) ? $this->services['doctrine.orm.user_manager_configurator'] : $this->get('doctrine.orm.user_manager_configurator')) && false ?: '_'}->configure($instance);
 
         return $instance;
     }
 
     /**
-     * Gets the 'doctrine.orm.default_entity_manager.property_info_extractor' service.
+     * Gets the 'doctrine.orm.user_entity_manager.property_info_extractor' service.
      *
      * This service is shared.
      * This method always returns the same instance of the service.
      *
      * @return \Symfony\Bridge\Doctrine\PropertyInfo\DoctrineExtractor A Symfony\Bridge\Doctrine\PropertyInfo\DoctrineExtractor instance
      */
-    protected function getDoctrine_Orm_DefaultEntityManager_PropertyInfoExtractorService()
+    protected function getDoctrine_Orm_UserEntityManager_PropertyInfoExtractorService()
     {
-        return $this->services['doctrine.orm.default_entity_manager.property_info_extractor'] = new \Symfony\Bridge\Doctrine\PropertyInfo\DoctrineExtractor(${($_ = isset($this->services['doctrine.orm.default_entity_manager']) ? $this->services['doctrine.orm.default_entity_manager'] : $this->get('doctrine.orm.default_entity_manager')) && false ?: '_'}->getMetadataFactory());
+        return $this->services['doctrine.orm.user_entity_manager.property_info_extractor'] = new \Symfony\Bridge\Doctrine\PropertyInfo\DoctrineExtractor(${($_ = isset($this->services['doctrine.orm.user_entity_manager']) ? $this->services['doctrine.orm.user_entity_manager'] : $this->get('doctrine.orm.user_entity_manager')) && false ?: '_'}->getMetadataFactory());
     }
 
     /**
-     * Gets the 'doctrine.orm.default_listeners.attach_entity_listeners' service.
+     * Gets the 'doctrine.orm.user_listeners.attach_entity_listeners' service.
      *
      * This service is shared.
      * This method always returns the same instance of the service.
      *
      * @return \Doctrine\ORM\Tools\AttachEntityListenersListener A Doctrine\ORM\Tools\AttachEntityListenersListener instance
      */
-    protected function getDoctrine_Orm_DefaultListeners_AttachEntityListenersService()
+    protected function getDoctrine_Orm_UserListeners_AttachEntityListenersService()
     {
-        return $this->services['doctrine.orm.default_listeners.attach_entity_listeners'] = new \Doctrine\ORM\Tools\AttachEntityListenersListener();
+        return $this->services['doctrine.orm.user_listeners.attach_entity_listeners'] = new \Doctrine\ORM\Tools\AttachEntityListenersListener();
     }
 
     /**
-     * Gets the 'doctrine.orm.default_manager_configurator' service.
+     * Gets the 'doctrine.orm.user_manager_configurator' service.
      *
      * This service is shared.
      * This method always returns the same instance of the service.
      *
      * @return \Doctrine\Bundle\DoctrineBundle\ManagerConfigurator A Doctrine\Bundle\DoctrineBundle\ManagerConfigurator instance
      */
-    protected function getDoctrine_Orm_DefaultManagerConfiguratorService()
+    protected function getDoctrine_Orm_UserManagerConfiguratorService()
     {
-        return $this->services['doctrine.orm.default_manager_configurator'] = new \Doctrine\Bundle\DoctrineBundle\ManagerConfigurator(array(), array());
+        return $this->services['doctrine.orm.user_manager_configurator'] = new \Doctrine\Bundle\DoctrineBundle\ManagerConfigurator(array(), array());
     }
 
     /**
@@ -1196,52 +1193,52 @@ class appDevDebugProjectContainer extends Container
     }
 
     /**
-     * Gets the 'doctrine_cache.providers.doctrine.orm.default_metadata_cache' service.
+     * Gets the 'doctrine_cache.providers.doctrine.orm.user_metadata_cache' service.
      *
      * This service is shared.
      * This method always returns the same instance of the service.
      *
      * @return \Doctrine\Common\Cache\ArrayCache A Doctrine\Common\Cache\ArrayCache instance
      */
-    protected function getDoctrineCache_Providers_Doctrine_Orm_DefaultMetadataCacheService()
+    protected function getDoctrineCache_Providers_Doctrine_Orm_UserMetadataCacheService()
     {
-        $this->services['doctrine_cache.providers.doctrine.orm.default_metadata_cache'] = $instance = new \Doctrine\Common\Cache\ArrayCache();
+        $this->services['doctrine_cache.providers.doctrine.orm.user_metadata_cache'] = $instance = new \Doctrine\Common\Cache\ArrayCache();
 
-        $instance->setNamespace('sf2orm_default_084d46e5699b8a7f9f5da1b7ce2a7bd7648c42499b627dde4c24faba33bf8575');
+        $instance->setNamespace('sf2orm_user_084d46e5699b8a7f9f5da1b7ce2a7bd7648c42499b627dde4c24faba33bf8575');
 
         return $instance;
     }
 
     /**
-     * Gets the 'doctrine_cache.providers.doctrine.orm.default_query_cache' service.
+     * Gets the 'doctrine_cache.providers.doctrine.orm.user_query_cache' service.
      *
      * This service is shared.
      * This method always returns the same instance of the service.
      *
      * @return \Doctrine\Common\Cache\ArrayCache A Doctrine\Common\Cache\ArrayCache instance
      */
-    protected function getDoctrineCache_Providers_Doctrine_Orm_DefaultQueryCacheService()
+    protected function getDoctrineCache_Providers_Doctrine_Orm_UserQueryCacheService()
     {
-        $this->services['doctrine_cache.providers.doctrine.orm.default_query_cache'] = $instance = new \Doctrine\Common\Cache\ArrayCache();
+        $this->services['doctrine_cache.providers.doctrine.orm.user_query_cache'] = $instance = new \Doctrine\Common\Cache\ArrayCache();
 
-        $instance->setNamespace('sf2orm_default_084d46e5699b8a7f9f5da1b7ce2a7bd7648c42499b627dde4c24faba33bf8575');
+        $instance->setNamespace('sf2orm_user_084d46e5699b8a7f9f5da1b7ce2a7bd7648c42499b627dde4c24faba33bf8575');
 
         return $instance;
     }
 
     /**
-     * Gets the 'doctrine_cache.providers.doctrine.orm.default_result_cache' service.
+     * Gets the 'doctrine_cache.providers.doctrine.orm.user_result_cache' service.
      *
      * This service is shared.
      * This method always returns the same instance of the service.
      *
      * @return \Doctrine\Common\Cache\ArrayCache A Doctrine\Common\Cache\ArrayCache instance
      */
-    protected function getDoctrineCache_Providers_Doctrine_Orm_DefaultResultCacheService()
+    protected function getDoctrineCache_Providers_Doctrine_Orm_UserResultCacheService()
     {
-        $this->services['doctrine_cache.providers.doctrine.orm.default_result_cache'] = $instance = new \Doctrine\Common\Cache\ArrayCache();
+        $this->services['doctrine_cache.providers.doctrine.orm.user_result_cache'] = $instance = new \Doctrine\Common\Cache\ArrayCache();
 
-        $instance->setNamespace('sf2orm_default_084d46e5699b8a7f9f5da1b7ce2a7bd7648c42499b627dde4c24faba33bf8575');
+        $instance->setNamespace('sf2orm_user_084d46e5699b8a7f9f5da1b7ce2a7bd7648c42499b627dde4c24faba33bf8575');
 
         return $instance;
     }
@@ -2842,7 +2839,7 @@ class appDevDebugProjectContainer extends Container
         $n = new \Symfony\Component\Security\Http\Authentication\DefaultAuthenticationFailureHandler($f, $k, array(), $a);
         $n->setOptions(array('login_path' => '/login', 'failure_path' => NULL, 'failure_forward' => false, 'failure_path_parameter' => '_failure_path'));
 
-        return $this->services['security.firewall.map.context.main'] = new \Symfony\Bundle\SecurityBundle\Security\FirewallContext(array(0 => new \Symfony\Component\Security\Http\Firewall\ChannelListener($j, new \Symfony\Component\Security\Http\EntryPoint\RetryAuthenticationEntryPoint(80, 443), $a), 1 => new \Symfony\Component\Security\Http\Firewall\ContextListener($b, array(0 => ${($_ = isset($this->services['fos_user.user_provider.username']) ? $this->services['fos_user.user_provider.username'] : $this->getFosUser_UserProvider_UsernameService()) && false ?: '_'}), 'main', $a, $c, $d), 2 => $l, 3 => new \Symfony\Component\Security\Http\Firewall\UsernamePasswordFormAuthenticationListener($b, $g, ${($_ = isset($this->services['security.authentication.session_strategy']) ? $this->services['security.authentication.session_strategy'] : $this->getSecurity_Authentication_SessionStrategyService()) && false ?: '_'}, $k, 'main', $m, $n, array('check_path' => '/login_check', 'use_forward' => false, 'require_previous_session' => true, 'username_parameter' => '_username', 'password_parameter' => '_password', 'csrf_parameter' => '_csrf_token', 'csrf_token_id' => 'authenticate', 'post_only' => true), $a, $c, ${($_ = isset($this->services['security.csrf.token_manager']) ? $this->services['security.csrf.token_manager'] : $this->get('security.csrf.token_manager')) && false ?: '_'}), 4 => new \Symfony\Component\Security\Http\Firewall\AnonymousAuthenticationListener($b, '595394458b2c55.01287657', $a, $g), 5 => new \Symfony\Component\Security\Http\Firewall\AccessListener($b, ${($_ = isset($this->services['debug.security.access.decision_manager']) ? $this->services['debug.security.access.decision_manager'] : $this->getDebug_Security_Access_DecisionManagerService()) && false ?: '_'}, $j, $g)), new \Symfony\Component\Security\Http\Firewall\ExceptionListener($b, $d, $k, 'main', new \Symfony\Component\Security\Http\EntryPoint\FormAuthenticationEntryPoint($f, $k, '/login', false), NULL, NULL, $a, false), new \Symfony\Bundle\SecurityBundle\Security\FirewallConfig('main', 'security.user_checker', 'security.request_matcher.a64d671f18e5575531d76c1d1154fdc4476cb8a79c02ed7a3469178c6d7b96b5ed4e60db', true, false, 'fos_user.user_provider.username', 'main', 'security.authentication.form_entry_point.main', NULL, NULL, array(0 => 'logout', 1 => 'form_login', 2 => 'anonymous')));
+        return $this->services['security.firewall.map.context.main'] = new \Symfony\Bundle\SecurityBundle\Security\FirewallContext(array(0 => new \Symfony\Component\Security\Http\Firewall\ChannelListener($j, new \Symfony\Component\Security\Http\EntryPoint\RetryAuthenticationEntryPoint(80, 443), $a), 1 => new \Symfony\Component\Security\Http\Firewall\ContextListener($b, array(0 => ${($_ = isset($this->services['fos_user.user_provider.username']) ? $this->services['fos_user.user_provider.username'] : $this->getFosUser_UserProvider_UsernameService()) && false ?: '_'}), 'main', $a, $c, $d), 2 => $l, 3 => new \Symfony\Component\Security\Http\Firewall\UsernamePasswordFormAuthenticationListener($b, $g, ${($_ = isset($this->services['security.authentication.session_strategy']) ? $this->services['security.authentication.session_strategy'] : $this->getSecurity_Authentication_SessionStrategyService()) && false ?: '_'}, $k, 'main', $m, $n, array('check_path' => '/login_check', 'use_forward' => false, 'require_previous_session' => true, 'username_parameter' => '_username', 'password_parameter' => '_password', 'csrf_parameter' => '_csrf_token', 'csrf_token_id' => 'authenticate', 'post_only' => true), $a, $c, ${($_ = isset($this->services['security.csrf.token_manager']) ? $this->services['security.csrf.token_manager'] : $this->get('security.csrf.token_manager')) && false ?: '_'}), 4 => new \Symfony\Component\Security\Http\Firewall\AnonymousAuthenticationListener($b, '595d3b7b91f798.26095872', $a, $g), 5 => new \Symfony\Component\Security\Http\Firewall\AccessListener($b, ${($_ = isset($this->services['debug.security.access.decision_manager']) ? $this->services['debug.security.access.decision_manager'] : $this->getDebug_Security_Access_DecisionManagerService()) && false ?: '_'}, $j, $g)), new \Symfony\Component\Security\Http\Firewall\ExceptionListener($b, $d, $k, 'main', new \Symfony\Component\Security\Http\EntryPoint\FormAuthenticationEntryPoint($f, $k, '/login', false), NULL, NULL, $a, false), new \Symfony\Bundle\SecurityBundle\Security\FirewallConfig('main', 'security.user_checker', 'security.request_matcher.a64d671f18e5575531d76c1d1154fdc4476cb8a79c02ed7a3469178c6d7b96b5ed4e60db', true, false, 'fos_user.user_provider.username', 'main', 'security.authentication.form_entry_point.main', NULL, NULL, array(0 => 'logout', 1 => 'form_login', 2 => 'anonymous')));
     }
 
     /**
@@ -4330,7 +4327,7 @@ class appDevDebugProjectContainer extends Container
      */
     protected function getCache_Annotations_RecorderInnerService($lazyLoad = true)
     {
-        return $this->services['cache.annotations.recorder_inner'] = \Symfony\Component\Cache\Adapter\AbstractAdapter::createSystemCache('pNXJLkiPGu', 0, 'yXgnFFm+ZdhevxcOJABr4m', (__DIR__.'/pools'), ${($_ = isset($this->services['monolog.logger.cache']) ? $this->services['monolog.logger.cache'] : $this->get('monolog.logger.cache', ContainerInterface::NULL_ON_INVALID_REFERENCE)) && false ?: '_'});
+        return $this->services['cache.annotations.recorder_inner'] = \Symfony\Component\Cache\Adapter\AbstractAdapter::createSystemCache('pNXJLkiPGu', 0, 'aY7yZ1Yh+oJiB6fQq287HW', (__DIR__.'/pools'), ${($_ = isset($this->services['monolog.logger.cache']) ? $this->services['monolog.logger.cache'] : $this->get('monolog.logger.cache', ContainerInterface::NULL_ON_INVALID_REFERENCE)) && false ?: '_'});
     }
 
     /**
@@ -4374,7 +4371,7 @@ class appDevDebugProjectContainer extends Container
      */
     protected function getCache_Serializer_RecorderInnerService($lazyLoad = true)
     {
-        return $this->services['cache.serializer.recorder_inner'] = \Symfony\Component\Cache\Adapter\AbstractAdapter::createSystemCache('49jUZ5ondZ', 0, 'yXgnFFm+ZdhevxcOJABr4m', (__DIR__.'/pools'), ${($_ = isset($this->services['monolog.logger.cache']) ? $this->services['monolog.logger.cache'] : $this->get('monolog.logger.cache', ContainerInterface::NULL_ON_INVALID_REFERENCE)) && false ?: '_'});
+        return $this->services['cache.serializer.recorder_inner'] = \Symfony\Component\Cache\Adapter\AbstractAdapter::createSystemCache('49jUZ5ondZ', 0, 'aY7yZ1Yh+oJiB6fQq287HW', (__DIR__.'/pools'), ${($_ = isset($this->services['monolog.logger.cache']) ? $this->services['monolog.logger.cache'] : $this->get('monolog.logger.cache', ContainerInterface::NULL_ON_INVALID_REFERENCE)) && false ?: '_'});
     }
 
     /**
@@ -4393,7 +4390,7 @@ class appDevDebugProjectContainer extends Container
      */
     protected function getCache_System_RecorderInnerService($lazyLoad = true)
     {
-        return $this->services['cache.system.recorder_inner'] = \Symfony\Component\Cache\Adapter\AbstractAdapter::createSystemCache('IsiCOwgAHl', 0, 'yXgnFFm+ZdhevxcOJABr4m', (__DIR__.'/pools'), ${($_ = isset($this->services['monolog.logger.cache']) ? $this->services['monolog.logger.cache'] : $this->get('monolog.logger.cache', ContainerInterface::NULL_ON_INVALID_REFERENCE)) && false ?: '_'});
+        return $this->services['cache.system.recorder_inner'] = \Symfony\Component\Cache\Adapter\AbstractAdapter::createSystemCache('IsiCOwgAHl', 0, 'aY7yZ1Yh+oJiB6fQq287HW', (__DIR__.'/pools'), ${($_ = isset($this->services['monolog.logger.cache']) ? $this->services['monolog.logger.cache'] : $this->get('monolog.logger.cache', ContainerInterface::NULL_ON_INVALID_REFERENCE)) && false ?: '_'});
     }
 
     /**
@@ -4429,7 +4426,7 @@ class appDevDebugProjectContainer extends Container
      */
     protected function getCache_Validator_RecorderInnerService($lazyLoad = true)
     {
-        return $this->services['cache.validator.recorder_inner'] = \Symfony\Component\Cache\Adapter\AbstractAdapter::createSystemCache('neigbwZV5G', 0, 'yXgnFFm+ZdhevxcOJABr4m', (__DIR__.'/pools'), ${($_ = isset($this->services['monolog.logger.cache']) ? $this->services['monolog.logger.cache'] : $this->get('monolog.logger.cache', ContainerInterface::NULL_ON_INVALID_REFERENCE)) && false ?: '_'});
+        return $this->services['cache.validator.recorder_inner'] = \Symfony\Component\Cache\Adapter\AbstractAdapter::createSystemCache('neigbwZV5G', 0, 'aY7yZ1Yh+oJiB6fQq287HW', (__DIR__.'/pools'), ${($_ = isset($this->services['monolog.logger.cache']) ? $this->services['monolog.logger.cache'] : $this->get('monolog.logger.cache', ContainerInterface::NULL_ON_INVALID_REFERENCE)) && false ?: '_'});
     }
 
     /**
@@ -4901,7 +4898,7 @@ class appDevDebugProjectContainer extends Container
      */
     protected function getSecurity_Authentication_Provider_Anonymous_MainService()
     {
-        return $this->services['security.authentication.provider.anonymous.main'] = new \Symfony\Component\Security\Core\Authentication\Provider\AnonymousAuthenticationProvider('595394458b2c55.01287657');
+        return $this->services['security.authentication.provider.anonymous.main'] = new \Symfony\Component\Security\Core\Authentication\Provider\AnonymousAuthenticationProvider('595d3b7b91f798.26095872');
     }
 
     /**
@@ -5536,9 +5533,9 @@ class appDevDebugProjectContainer extends Container
             'doctrine.dbal.events.oracle_session_init.class' => 'Doctrine\\DBAL\\Event\\Listeners\\OracleSessionInit',
             'doctrine.class' => 'Doctrine\\Bundle\\DoctrineBundle\\Registry',
             'doctrine.entity_managers' => array(
-                'default' => 'doctrine.orm.default_entity_manager',
+                'user' => 'doctrine.orm.user_entity_manager',
             ),
-            'doctrine.default_entity_manager' => 'default',
+            'doctrine.default_entity_manager' => 'user',
             'doctrine.dbal.connection_factory.types' => array(
 
             ),

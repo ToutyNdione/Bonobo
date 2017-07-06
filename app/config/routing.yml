@@ -1,7 +1,3 @@
-bp_bonobo_friend:
-    resource: "@BPBonoboBundle/Controller/FriendController.php"
-    type:     annotation
-
 bp_bonobo_user:
     resource: "@BPBonoboBundle/Controller/UserController.php"
     type:     annotation

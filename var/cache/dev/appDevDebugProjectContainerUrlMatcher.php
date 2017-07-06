@@ -113,68 +113,6 @@ class appDevDebugProjectContainerUrlMatcher extends Symfony\Bundle\FrameworkBund
 
         }
 
-        elseif (0 === strpos($pathinfo, '/friend')) {
-            // friend_index
-            if ('/friend' === $trimmedPathinfo) {
-                if ('GET' !== $canonicalMethod) {
-                    $allow[] = 'GET';
-                    goto not_friend_index;
-                }
-
-                if (substr($pathinfo, -1) !== '/') {
-                    return $this->redirect($pathinfo.'/', 'friend_index');
-                }
-
-                return array (  '_controller' => 'BP\\BonoboBundle\\Controller\\FriendController::indexAction',  '_route' => 'friend_index',);
-            }
-            not_friend_index:
-
-            // friend_new
-            if ('/friend/addfriend' === $pathinfo) {
-                if (!in_array($canonicalMethod, array('GET', 'POST'))) {
-                    $allow = array_merge($allow, array('GET', 'POST'));
-                    goto not_friend_new;
-                }
-
-                return array (  '_controller' => 'BP\\BonoboBundle\\Controller\\FriendController::newAction',  '_route' => 'friend_new',);
-            }
-            not_friend_new:
-
-            // friend_show
-            if (preg_match('#^/friend/(?P<id>[^/]++)$#s', $pathinfo, $matches)) {
-                if ('GET' !== $canonicalMethod) {
-                    $allow[] = 'GET';
-                    goto not_friend_show;
-                }
-
-                return $this->mergeDefaults(array_replace($matches, array('_route' => 'friend_show')), array (  '_controller' => 'BP\\BonoboBundle\\Controller\\FriendController::showAction',));
-            }
-            not_friend_show:
-
-            // friend_edit
-            if (preg_match('#^/friend/(?P<id>[^/]++)/edit$#s', $pathinfo, $matches)) {
-                if (!in_array($canonicalMethod, array('GET', 'POST'))) {
-                    $allow = array_merge($allow, array('GET', 'POST'));
-                    goto not_friend_edit;
-                }
-
-                return $this->mergeDefaults(array_replace($matches, array('_route' => 'friend_edit')), array (  '_controller' => 'BP\\BonoboBundle\\Controller\\FriendController::editAction',));
-            }
-            not_friend_edit:
-
-            // friend_delete
-            if (preg_match('#^/friend/(?P<id>[^/]++)$#s', $pathinfo, $matches)) {
-                if ('DELETE' !== $canonicalMethod) {
-                    $allow[] = 'DELETE';
-                    goto not_friend_delete;
-                }
-
-                return $this->mergeDefaults(array_replace($matches, array('_route' => 'friend_delete')), array (  '_controller' => 'BP\\BonoboBundle\\Controller\\FriendController::deleteAction',));
-            }
-            not_friend_delete:
-
-        }
-
         elseif (0 === strpos($pathinfo, '/user')) {
             // user_index
             if ('/user' === $trimmedPathinfo) {
@@ -234,6 +172,27 @@ class appDevDebugProjectContainerUrlMatcher extends Symfony\Bundle\FrameworkBund
                 return $this->mergeDefaults(array_replace($matches, array('_route' => 'user_delete')), array (  '_controller' => 'BP\\BonoboBundle\\Controller\\UserController::deleteAction',));
             }
             not_user_delete:
+
+            // addfriend
+            if (0 === strpos($pathinfo, '/user/addfriend') && preg_match('#^/user/addfriend/(?P<id>[^/]++)$#s', $pathinfo, $matches)) {
+                return $this->mergeDefaults(array_replace($matches, array('_route' => 'addfriend')), array (  '_controller' => 'BP\\BonoboBundle\\Controller\\UserController::addFriend',));
+            }
+
+            // removefriend
+            if (0 === strpos($pathinfo, '/user/removefriend') && preg_match('#^/user/removefriend/(?P<id>[^/]++)$#s', $pathinfo, $matches)) {
+                return $this->mergeDefaults(array_replace($matches, array('_route' => 'removefriend')), array (  '_controller' => 'BP\\BonoboBundle\\Controller\\UserController::removeFriend',));
+            }
+
+            // friendlist
+            if (0 === strpos($pathinfo, '/user/friendlist') && preg_match('#^/user/friendlist/(?P<id>[^/]++)$#s', $pathinfo, $matches)) {
+                if ('GET' !== $canonicalMethod) {
+                    $allow[] = 'GET';
+                    goto not_friendlist;
+                }
+
+                return $this->mergeDefaults(array_replace($matches, array('_route' => 'friendlist')), array (  '_controller' => 'BP\\BonoboBundle\\Controller\\UserController::listFriend',));
+            }
+            not_friendlist:
 
         }
 

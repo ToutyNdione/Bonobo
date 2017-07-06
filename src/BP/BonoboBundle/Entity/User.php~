@@ -53,24 +53,15 @@ class User extends BaseUser
      */
     protected $nourriture;
 
-/**
- * @ORM\ManyToMany(targetEntity="User", mappedBy="myFriends")
- **/
-private $friendsWithMe;
-
-/**
- * @ORM\ManyToMany(targetEntity="User", inversedBy="friendsWithMe")
- * @ORM\JoinTable(name="friends",
- *      joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
- *      inverseJoinColumns={@ORM\JoinColumn(name="friend_user_id", referencedColumnName="id")}
- *      )
- **/
-private $myFriends;
+    /**
+     * @ORM\ManyToMany(targetEntity="User")
+     **/
+    private $myFriends;
 
 
     public function __construct() {
         parent::__construct();        
-        $this->friendsWithMe = new \Doctrine\Common\Collections\ArrayCollection();
+       // $this->friendsWithMe = new \Doctrine\Common\Collections\ArrayCollection();
         $this->myFriends = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
@@ -181,34 +172,5 @@ private $myFriends;
         return $this->nourriture;
     }
 
-       public function getFriends()
-    {
-        return $this->friends->toArray();
-    }
-
-    /**
-     * @param  User $user
-     * @return void
-     */
-    public function addMyFriend(User $friend)
-    {
-           
-            $this->myFriends[]= $friend;
-            
-        
-    }
-
-    /**
-     * @param  User $user
-     * @return void
-     */
-    public function removeMyFriend(User $friend)
-    {
-        
-            $this->myFriends->removeElement($friend);
-            
-    }
-
 
 }
-

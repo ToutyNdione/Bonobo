@@ -25,16 +25,19 @@
                 <td>{{ user.nourriture }}</td>
                 <td>
                     <ul>
+                        {% if  app.user == user %}
+
                         <li>
                             <a href="{{ path('user_show', { 'id': user.id }) }}">show</a>
                         </li>
                         <li>
                             <a href="{{ path('user_edit', { 'id': user.id }) }}">edit</a>
                         </li>
+                        {% else%}
                          <li>
-                            <a href="{{ path('friend_new', { 'id': user.id }) }}">add friends</a>
+                            <a href="{{ path('addfriend', { 'id': user.id })}}">add friend</a>
                         </li>
-
+                        {%endif%}
                     </ul>
                 </td>
             </tr>

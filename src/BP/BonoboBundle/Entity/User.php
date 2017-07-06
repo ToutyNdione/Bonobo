@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 use FOS\UserBundle\Model\User as BaseUser;
 use Symfony\Component\Validator\Constraints as Assert;
 //use BP\BonoboBundle\Entity\User;
+use Doctrine\Common\Collections\Collection;
 
 
 /**
@@ -53,24 +54,21 @@ class User extends BaseUser
      */
     protected $nourriture;
 
-/**
- * @ORM\ManyToMany(targetEntity="User", mappedBy="myFriends")
- **/
-private $friendsWithMe;
+    /**
+     * @ORM\ManyToMany(targetEntity="User")
+     @ORM\JoinTable(name="friend",
+     *     joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
+     *     inverseJoinColumns={@ORM\JoinColumn(name="friend_id", referencedColumnName="id")}
+     * )
+     **/
+    private $myFriends;
 
-/**
- * @ORM\ManyToMany(targetEntity="User", inversedBy="friendsWithMe")
- * @ORM\JoinTable(name="friends",
- *      joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
- *      inverseJoinColumns={@ORM\JoinColumn(name="friend_user_id", referencedColumnName="id")}
- *      )
- **/
-private $myFriends;
+    private $user;
 
 
     public function __construct() {
         parent::__construct();        
-        $this->friendsWithMe = new \Doctrine\Common\Collections\ArrayCollection();
+       // $this->friendsWithMe = new \Doctrine\Common\Collections\ArrayCollection();
         $this->myFriends = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
@@ -181,77 +179,53 @@ private $myFriends;
         return $this->nourriture;
     }
 
-       public function getFriends()
-    {
-        return $this->friends->toArray();
-    }
-
-    /**
-     * @param  User $user
-     * @return void
-     */
-    public function addMyFriend(User $friend)
-    {
-           
-            $this->myFriends[]= $friend;
-            
-        
-    }
-
-    /**
-     * @param  User $user
-     * @return void
-     */
-    public function removeMyFriend(User $friend)
-    {
-        
-            $this->myFriends->removeElement($friend);
-            
-    }
-
 
 
     /**
-     * Add friendsWithMe
+     * Add myFriend
      *
-     * @param \BP\BonoboBundle\Entity\User $friendsWithMe
+     * @param \BP\BonoboBundle\Entity\User $myFriend
      *
      * @return User
      */
-    public function addFriendsWithMe(\BP\BonoboBundle\Entity\User $friendsWithMe)
+    public function addMyFriend(\BP\BonoboBundle\Entity\User $myFriend)
     {
-        $this->friendsWithMe[] = $friendsWithMe;
-
-        return $this;
+         $this->myFriends[] = $myFriend;        
+         return $this;
+        // if (!$this->myFriends->contains($myFriend)) {
+        //     $this->myFriends->add($myFriend);
+        //     $user->addFriend($this);
+        // }
     }
 
     /**
-     * Remove friendsWithMe
+     * Remove myFriend
      *
-     * @param \BP\BonoboBundle\Entity\User $friendsWithMe
+     * @param \BP\BonoboBundle\Entity\User $myFriend
      */
-    public function removeFriendsWithMe(\BP\BonoboBundle\Entity\User $friendsWithMe)
+    public function removeMyFriend(\BP\BonoboBundle\Entity\User $myFriend)
     {
-        $this->friendsWithMe->removeElement($friendsWithMe);
+        $this->myFriends->removeElement($myFriend);
     }
 
-    /**
-     * Get friendsWithMe
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getFriendsWithMe()
-    {
-        return $this->friendsWithMe;
-    }
-
-    /**
-     * Get myFriends
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getMyFriends()
+       public function getMyFriends()
     {
         return $this->myFriends;
+    }
+
+    public function setMyFriends(Collection $friend)
+    {
+
+        return $this->myFriends;
+    }
+
+
+  public function getUser()
+    {
+        return $this->user;
+    }
+    public function __toString()
+    {
+        return (string) $this->getMyFriends();
     }
 }

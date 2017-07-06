@@ -147,11 +147,8 @@
   'WebProfilerBundle:Profiler:toolbar_item.html.twig' => __DIR__.'/../../../vendor/symfony/symfony/src/Symfony/Bundle/WebProfilerBundle/Resources/views/Profiler/toolbar_item.html.twig',
   ':user:show.html.twig' => __DIR__.'/../../../app/Resources/views/user/show.html.twig',
   ':user:edit.html.twig' => __DIR__.'/../../../app/Resources/views/user/edit.html.twig',
+  ':user:friendlist.html.twig' => __DIR__.'/../../../app/Resources/views/user/friendlist.html.twig',
   ':user:index.html.twig' => __DIR__.'/../../../app/Resources/views/user/index.html.twig',
   ':default:index.html.twig' => __DIR__.'/../../../app/Resources/views/default/index.html.twig',
-  ':friend:show.html.twig' => __DIR__.'/../../../app/Resources/views/friend/show.html.twig',
-  ':friend:edit.html.twig' => __DIR__.'/../../../app/Resources/views/friend/edit.html.twig',
-  ':friend:new.html.twig' => __DIR__.'/../../../app/Resources/views/friend/new.html.twig',
-  ':friend:index.html.twig' => __DIR__.'/../../../app/Resources/views/friend/index.html.twig',
   '::base.html.twig' => __DIR__.'/../../../app/Resources/views/base.html.twig',
 );
